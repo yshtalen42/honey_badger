@@ -184,21 +184,43 @@ class SPEARMachineInterface(MachineInterface):
                 return (self.pvs[device_name].lower_ctrl_limit, self.pvs[device_name].upper_ctrl_limit)
 
     def set_value(self, device_name, val):
+        
+        device_root=device_name.split(':')[0]
+        control=device_root + ':ControlState'
+        setpt=device_root + ':CurrSetpt'
+        
         """
-        Setter function for lcls.
+        Setter function for SPEAR.
+        performs ControlState and set point sequence to change skew quad setting
 
         :param device_name: (str) PV name used in caput
         :param val: (object) Value to write to device. Variable data type depending on PV type
         """
-        pv = self.pvs.get(device_name, None)
+        pv = self.pvs.get(setpt, None)
+        ctrl = self.pvs.get(control, None)
         if pv is None:
-            self.pvs[device_name] = epics.get_pv(device_name)
+            self.pvs[control] = epics.get_pv(control)
+            print('created {}'.format(control))
+            self.pvs[setpt] = epics.get_pv(setpt)
+            print('created {}'.format(setpt))
             return None
         else:
             if not pv.connected:
                 return None
             else:
-                return pv.put(val)
+                #pull current setpt array
+                arr=pv.get()
+                #change setpt
+                arr[0]=val
+                #ControlState --> HALT
+                ctrl.put(0)
+                #write setpt
+                stat=pv.put(arr)
+                #ControlState --> ARM
+                ctrl.put(1)
+                #ControlState --> RUN
+                ctrl.put(2)
+                return stat
 
     def get_energy(self):
         """
