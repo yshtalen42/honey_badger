@@ -1,0 +1,23 @@
+In [1]: import pickle
+
+In [2]: with open('parameters/spear_hyperparams.pkl', 'rb') as f: p=pickle.load(f)
+
+In [3]: p
+Out[3]: 
+{'01G-QSS4:Curr1': 1,
+ '02G-QSS3:Curr1': 1,
+ '03G-QSS3:Curr1': 1,
+ '04G-QSS3:Curr1': 1,
+ '05G-QSS3:Curr1': 1,
+ '07G-QSS2:Curr1': 1,
+ '08G-QSS2:Curr1': 1,
+ '09G-QSS1:Curr1': 1,
+ '10G-QSS4:Curr1': 1,
+ '11G-QSS3:Curr1': 1,
+ '12G-QSS3:Curr1': 1,
+ '14G-QSS2:Curr1': 1,
+ '16G-QSS2:Curr1': 1,
+ '17G-QSS2:Curr1': 1,
+ '18G-QSS1:Curr1': 1,
+ 'amp': 0.01,
+ 'noise': 0.0001}

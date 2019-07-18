@@ -1,0 +1,17 @@
+TODO NOTES
+
+
+1) make SPEARMachineInterface
+
+2) duplicate LCLSMachineInterface calls throughout code to work with SPEAR as well
+
+- generic_optim.py
+- mint/normscales.py
+- mint/lcls/lcls_interface/py - removed all SPEAR instances and restored the normal LCLS device factory stuff
+- mint/lcls/lcls_devices.py - remvoed SPEARSkewQuad method
+
+3) remove SPEAR jank from LCLSMachineInterface
+
+4) edit/clean BayesOpt stuff
+
+5) inject device params loading for SPEAR version of GP

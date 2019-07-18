@@ -1,3 +1,4 @@
+# -*- coding: iso-8859-1 -*-
 import time
 import numpy as np
 
@@ -24,11 +25,11 @@ class SLACTarget(Target):
         self.std_dev = []
         self.charge = []
         self.current = []
-        #self.losses = []
+        self.losses = []
         self.points = None
 
     def get_penalty(self):
-        sase, std, charge, current = self.get_value() #JANE: losses redacted from list to speed up debugging. put back after current when done
+        sase, std, charge, current, losses = self.get_value() 
         alarm = self.get_alarm()
         pen = 0.0
         if alarm > 1.0:
@@ -46,9 +47,70 @@ class SLACTarget(Target):
         self.alarms.append(alarm)
         self.charge.append(charge)
         self.current.append(current)
-        #self.losses.append(losses)
+        self.losses.append(losses)
         self.niter += 1
         return pen
+
+    #def get_alarm(self):
+        
+        #"""
+        ##Initialize PVs and setting used in the errorCheck method.
+        #"""
+        ##setup pvs to check
+        #self.error_bcs      = "BCS:MCC0:1:BEAMPMSV"
+        #self.error_mps      = "SIOC:SYS0:ML00:CALCOUT989"
+        #self.error_guardian = "SIOC:SYS0:ML00:AO466"
+        #self.error_und_tmit = "BPMS:UND1:3290:TMITTH"
+        #self.error_dmp_tmit_hstbr = "BPMS:DMP1:693:TMITHSTBR"
+
+        ##pv to bypass the error pause
+        #self.error_bypass  = "SIOC:SYS0:ML00:CALCOUT990"
+        #self.error_tripped = "SIOC:SYS0:ML00:CALCOUT991"
+
+        ##set the unlatch pv to zero
+        #epics.caput(self.error_bypass, 0)
+        #epics.caput(self.error_tripped,0)
+        
+        
+        #"""
+        ##Method that check the state of BCS, MPS, Gaurdian, UND-TMIT and pauses GP if there is a problem.
+        #"""
+        #while 1:
+            ##check for bad state
+            #if epics.caget(self.error_bypass, use_monitor=True)     == 1:
+                #out_msg="Bypass flag is TRUE"
+            #elif epics.caget(self.error_bcs, use_monitor=True)      != 1:
+                #out_msg="BCS tripped"
+            #elif epics.caget(self.error_mps, use_monitor=True)      != 0:
+                #out_msg="MPS tripped"
+            #elif epics.caget(self.error_guardian, use_monitor=True) != 0:
+                #out_msg="Gaurdian tripped"
+            #elif epics.caget(self.error_und_tmit, use_monitor=True) < 5.0e7:
+                #out_msg="UND Tmit Low"
+            #else:
+                #out_msg='Everything Okay'
+
+            ##exit if the stop button is set
+            ##if not self.mi.getter.caget("SIOC:SYS0:ML03:AO702"):
+            #if not epics.caget("SIOC:SYS0:ML03:AO702", use_monitor=True):
+                #break
+
+            ##set the error check message
+            #epics.caput ("SIOC:SYS0:ML00:CA000",out_msg)
+            #print out_msg
+
+            ##break out if error check is bypassed
+            #if (out_msg=="Bypass flag is TRUE"):
+                #break
+
+            ##break out if everything is okay
+            #if (out_msg=="Everything Okay"):
+                #epics.caput(self.error_tripped,0)
+                #break
+                ##return
+            #else:
+                #epics.caput(self.error_tripped,1)
+            #time.sleep(0.1)
 
     def get_value(self):
         """
@@ -100,8 +162,8 @@ class SLACTarget(Target):
               ' and standard deviation is ', self.objective_stdev)
 
         charge, current = self.mi.get_charge_current()
-        #losses = self.mi.get_losses()
-        return self.statistic, self.objective_stdev, charge, current, #losses
+        losses = self.mi.get_losses()
+        return self.statistic, self.objective_stdev, charge, current, losses
 
     def clean(self):
         Target.clean(self)
@@ -110,4 +172,4 @@ class SLACTarget(Target):
         self.std_dev = []
         self.charge = []
         self.current = []
-        #self.losses = []
+        self.losses = []

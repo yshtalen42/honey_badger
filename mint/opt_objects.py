@@ -336,8 +336,8 @@ class Device(object):
         self.tol = 0.001
         self.timeout = 5  # seconds
         self.target = None
-        self.low_limit = 0.
-        self.high_limit = 0.
+        self.low_limit = 0
+        self.high_limit = 0
         self._can_edit_limits = True
 
     def set_value(self, val):

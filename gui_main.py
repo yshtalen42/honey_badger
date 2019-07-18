@@ -333,7 +333,7 @@ class MainWindow(Ui_Form):
             self.cb_use_isim.setEnabled(False)
             self.sb_isim_rel_step.setValue(5)
 
-        if str(self.cb_select_alg.currentText()) in [self.Form.name_simplex_norm, self.Form.name_gauss_sklearn]:
+        if str(self.cb_select_alg.currentText()) in [self.Form.name_simplex_norm]:#, self.Form.name_gauss_sklearn]:
             self.g_box_isim.setEnabled(True)
             self.label_23.setEnabled(True)
             self.sb_isim_rel_step.setEnabled(True)
@@ -343,7 +343,7 @@ class MainWindow(Ui_Form):
             self.cb_use_isim.setEnabled(False)
             self.sb_isim_rel_step.setValue(5)
 
-        if str(self.cb_select_alg.currentText()) in [self.Form.name_gauss, self.Form.name_gauss_sklearn]:
+        if str(self.cb_select_alg.currentText()) in [self.Form.name_gauss]: #, self.Form.name_gauss_sklearn]:
             self.groupBox_2.setEnabled(True)
             for w in self.groupBox_2.findChildren(QWidget):
                 w.setEnabled(True)
