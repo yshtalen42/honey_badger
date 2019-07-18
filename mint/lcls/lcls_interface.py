@@ -1,3 +1,4 @@
+# -*- coding: iso-8859-1 -*-
 """
 Machine interface file for the LCLS to ocelot optimizer
 
@@ -8,7 +9,6 @@ import os
 import sys
 from collections import OrderedDict
 import numpy as np
-import pandas as pd
 
 from re import sub
 from xml.etree import ElementTree
@@ -87,18 +87,19 @@ class LCLSMachineInterface(MachineInterface):
         self.pvs = dict()
 
         # grab loss pvs # TODO: Fix this filename...
- #        self.losses_filename = os.path.join(self.get_params_folder(), 'lion.pvs')
- #        try:
- #            self.losspvs = pd.read_csv(self.losses_filename, header=None)  # ionization chamber values
- #            self.losspvs = [pv[0] for pv in np.array(self.losspvs)]
- #            print(self.name, ' - INFO: Loaded ', len(self.losspvs), ' loss PVs from ', self.losses_filename)
- #        except:
- #            self.losspvs = []
- #            print(self.name, ' - WARNING: Could not read ', self.losses_filename)
-        self.get_energy()
-        self.get_charge_current()
-        self.get_beamrate()
- #       self.get_losses()
+        self.losses_filename = os.path.join(self.get_params_folder(), 'lion.pvs')
+        try:
+            import pandas as pd
+            self.losspvs = pd.read_csv(self.losses_filename, header=None)  # ionization chamber values
+            self.losspvs = [pv[0] for pv in np.array(self.losspvs)]
+            print(self.name, ' - INFO: Loaded ', len(self.losspvs), ' loss PVs from ', self.losses_filename)
+        except:
+            self.losspvs = []
+            print(self.name, ' - WARNING: Could not read ', self.losses_filename)
+ #        self.get_energy()
+ #        self.get_charge_current()
+ #        self.get_beamrate()
+ #        self.get_losses()
         
 
     @staticmethod
@@ -135,6 +136,7 @@ class LCLSMachineInterface(MachineInterface):
             return LCLSQuad(pv, mi=self)
         d = LCLSDevice(eid=pv, mi=self)
         return d
+        
 
     def get_value(self, device_name):
         """
@@ -222,9 +224,9 @@ class LCLSMachineInterface(MachineInterface):
         rate = self.get_value('EVNT:SYS0:1:LCLSBEAMRATE')
         return rate
 
- #    def get_losses(self):
- #        losses = [self.get_value(pv) for pv in self.losspvs]
- #        return losses
+    def get_losses(self):
+        losses = [self.get_value(pv) for pv in self.losspvs]
+        return losses
 
     def logbook(self, gui):
         # Put an extra string into the logbook function
@@ -428,10 +430,13 @@ class LCLSMachineInterface(MachineInterface):
         # end try/except
         self.data['pv_list'] = [dev.eid for dev in devices]  # device names
         for dev in devices:
+            # these 3 lines are to preserve backwards compatibility
             self.data[dev.eid] = []
-        for dev in devices:
             vals = len(dev.values)
             self.data[dev.eid].append(dev.values)
+            # these 3 lines add redundancy but fix a problem with the MAT file format
+            self.data['PV_'+dev.eid] = []
+            self.data['PV_'+dev.eid].append(dev.values)
         if vals < len(objective_func.values):  # first point is duplicated for some reason so dropping
             objective_func.values = objective_func.values[1:]
             objective_func.objective_means = objective_func.objective_means[1:]
@@ -470,7 +475,7 @@ class LCLSMachineInterface(MachineInterface):
             self.data["epicsname"] = epics.name  # returns fakeepics if caput has been disabled
         except:
             pass
-        self.data["BEND_DMP1_400_BDES"] = self.get_value("BEND:DMP1:400:BDES")
+        #self.data["BEND_DMP1_400_BDES"] = self.get_value("BEND:DMP1:400:BDES")
         self.data["Energy"] = self.get_energy()
         self.data["ScanAlgorithm"] = str(method_name)  # string of the algorithm name
         self.data["ObjFuncPv"] = str(objective_func_pv)  # string identifing obj func pv

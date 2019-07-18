@@ -8,7 +8,6 @@ import os
 import sys
 from collections import OrderedDict
 import numpy as np
-import pandas as pd
 
 from re import sub
 from xml.etree import ElementTree
