@@ -203,7 +203,7 @@ class SPEARMachineInterface(MachineInterface):
             print('created {}'.format(control))
             self.pvs[setpt] = epics.get_pv(setpt)
             print('created {}'.format(setpt))
-            self.set_value(device_name, val)
+            self.set_value(self, device_name, val)
         else:
             if not pv.connected:
                 return None
