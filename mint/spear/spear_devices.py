@@ -67,7 +67,8 @@ class SPEARDevice(Device):
 class SPEARSkewQuad(SPEARDevice):
     def __init__(self, eid=None, mi=None):
         super(SPEARDevice, self).__init__(eid=eid)
-        self.mi = mi
+       self._can_edit_limits = True
+       self.mi = mi
 
     def get_delta(self):
         """
