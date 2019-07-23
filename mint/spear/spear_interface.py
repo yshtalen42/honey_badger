@@ -186,6 +186,7 @@ class SPEARMachineInterface(MachineInterface):
     def set_value(self, device_name, val):
         
         device_root=device_name.split(':')[0]
+        file_name=device_root.split('-')[0][:-1]+'.txt'
         control=device_root + ':ControlState'
         setpt=device_root + ':CurrSetpt'
         
@@ -208,19 +209,9 @@ class SPEARMachineInterface(MachineInterface):
             if not pv.connected:
                 return None
             else:
-                #pull current setpt array
-                arr=pv.get()
-                #change setpt
-                arr[0]=val
-                #ControlState --> HALT
-                ctrl.put(0)
-                #write setpt
-                stat=pv.put(arr)
-                #ControlState --> ARM
-                ctrl.put(1)
-                #ControlState --> RUN
-                ctrl.put(2)
-                return stat
+                with open(file_name, 'w') as f:
+                    f.write(val)
+                return val
 
     def get_energy(self):
         """
