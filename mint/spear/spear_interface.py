@@ -187,6 +187,8 @@ class SPEARMachineInterface(MachineInterface):
         
         device_root=device_name.split(':')[0]
         file_name=device_root.split('-')[0][:-1]+'.txt'
+        if file_name[0]=='0':
+            file_name = file_name[1:]
         control=device_root + ':ControlState'
         setpt=device_root + ':CurrSetpt'
         
@@ -209,8 +211,12 @@ class SPEARMachineInterface(MachineInterface):
             if not pv.connected:
                 return None
             else:
+                #instead of putting, write to file
+                #skew quad filename is <quad number>.txt
+                #matlab will read 1.txt, 2.txt, ..., 18.txt to create setsp() input array NOTE: there is no quad 6, 3 and 4 are used for orbit corrections and not to be tampered with 
                 with open(file_name, 'w') as f:
                     f.write(val)
+                print('wrote {} to {} for {}'.format(val, file_name, device_root))
                 return val
 
     def get_energy(self):
@@ -373,8 +379,7 @@ class SPEARMachineInterface(MachineInterface):
         :return: dict
         """
         devs = OrderedDict([
-            ("SPEAR Skew Quads", ["01G-QSS4:Curr1", "02G-QSS3:Curr1", "03G-QSS3:Curr1",
-                                    "04G-QSS3:Curr1", "05G-QSS3:Curr1", "07G-QSS2:Curr1",
+            ("SPEAR Skew Quads", ["01G-QSS4:Curr1", "02G-QSS3:Curr1", "05G-QSS3:Curr1", "07G-QSS2:Curr1",
                                     "08G-QSS2:Curr1", "09G-QSS1:Curr1", "10G-QSS4:Curr1",
                                     "11G-QSS3:Curr1", "12G-QSS3:Curr1", "14G-QSS2:Curr1",
                                     "16G-QSS2:Curr1", "17G-QSS2:Curr1", "18G-QSS1:Curr1"])
