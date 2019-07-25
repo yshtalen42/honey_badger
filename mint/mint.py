@@ -612,21 +612,34 @@ class Optimizer(Thread):
         # check limits
         if self.exceed_limits(x):
             return self.target.pen_max
+
+        #Ocelot Status: 1-making setpoints, 0-done making setpoints, 2-doing other stuff
         #set ocelot_busy flag for matlab
         with open('ocelot_status.txt', 'w') as f:
             f.write('1')
+        print('Ocelot is busy making setpoints...')
         # set values
         self.set_values(x)
         #unset ocelot_busy flag for matlab
         with open('ocelot_status.txt', 'w') as f:
             f.write('0')
+        print('Ocelot is done making setpoints...')
+        time.sleep(5)
         self.set_triggers()
         self.do_wait()
         #read matlab_busy flag for ocelot
-        matlab_busy='1'
-        while matlab_busy != '0':
+        while True:
             with open('matlab_status.txt', 'r') as f:
-                matlab_busy == f.read()
+                matlab_busy = f.read().strip('\n')
+            if matlab_busy=='0':
+                #set ocelot_busy flag for matlab
+                with open('ocelot_status.txt', 'w') as f:
+                    f.write('1')
+                break
+            else:
+                print('waiting for matlab to be done...')
+                time.sleep(2)
+                continue
         #when matlab releases control to ocelot, get_values and go on 
         self.get_values()
 

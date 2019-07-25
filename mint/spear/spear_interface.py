@@ -206,16 +206,17 @@ class SPEARMachineInterface(MachineInterface):
             print('created {}'.format(control))
             self.pvs[setpt] = epics.get_pv(setpt)
             print('created {}'.format(setpt))
-            self.set_value(self, device_name, val)
+            #self.set_value(self, device_name, val)
         else:
             if not pv.connected:
                 return None
             else:
                 #instead of putting, write to file
                 #skew quad filename is <quad number>.txt
-                #matlab will read 1.txt, 2.txt, ..., 18.txt to create setsp() input array NOTE: there is no quad 6, 3 and 4 are used for orbit corrections and not to be tampered with 
+                #matlab will read 1.txt, 2.txt, ..., 18.txt to create setsp() input array NOTE: there is no quad 6, 3 and 4 are used for orbit corrections and not to be tampered with
+                #pv.put(val)
                 with open(file_name, 'w') as f:
-                    f.write(val)
+                    f.write(str(val))
                 print('wrote {} to {} for {}'.format(val, file_name, device_root))
                 return val
 
