@@ -617,14 +617,16 @@ class Optimizer(Thread):
         #set ocelot_busy flag for matlab
         with open('ocelot_status.txt', 'w') as f:
             f.write('1')
+            f.close()
         print('Ocelot is busy making setpoints...')
         # set values
         self.set_values(x)
         #unset ocelot_busy flag for matlab
         with open('ocelot_status.txt', 'w') as f:
             f.write('0')
-        print('Ocelot is done making setpoints...')
-        time.sleep(5)
+            f.close()
+        print('Ocelot is done making setpoints...\n\n')
+        time.sleep(1)
         self.set_triggers()
         self.do_wait()
         #read matlab_busy flag for ocelot
@@ -635,10 +637,11 @@ class Optimizer(Thread):
                 #set ocelot_busy flag for matlab
                 with open('ocelot_status.txt', 'w') as f:
                     f.write('1')
+                    f.close()
                 break
             else:
-                print('waiting for matlab to be done...')
-                time.sleep(2)
+                print('waiting for matlab to be done...\n\n')
+                time.sleep(0.1)
                 continue
         #when matlab releases control to ocelot, get_values and go on 
         self.get_values()
